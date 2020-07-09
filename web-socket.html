@@ -83,6 +83,11 @@ declarative element definition is:
       _reopenInterval: {
         type: Number,
         value: 100
+      },
+      /* the terminate property using for socket termination */
+      terminate: {
+        type: Boolean,
+        value: false
       }
     },
 
@@ -164,15 +169,22 @@ declarative element definition is:
      * @param {Object} event A CloseEvent event object.
      */
     _onClose: function (event) {
-      if (!event.wasClean) {
-        if (this.noDecay) {
-          this.async(this.open);
-        } else {
-          this._reopenAttempt = this.async(this.open, this._reopenInterval);
-          this._reopenInterval *= 2;
+      if (this.terminate) {
+        this._reopenInterval = this._config._reopenInterval;
+        this.cancelAsync(this._reopenAttempt);
+      } else {
+        if (!event.wasClean) {
+          if (this.terminate) return;
+          if (this.noDecay) {
+            this.async(this.open);
+          } else {
+            this._reopenAttempt = this.async(this.open, this._reopenInterval);
+            this._reopenInterval *= 2;
+          }
         }
       }
-
+      var ws = this._websocket;
+      if (ws && ws.readyState === ws.CLOSED) return;
       this.fire('close');
     },
 

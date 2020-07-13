@@ -174,7 +174,6 @@ declarative element definition is:
         this.cancelAsync(this._reopenAttempt);
       } else {
         if (!event.wasClean) {
-          if (this.terminate) return;
           if (this.noDecay) {
             this.async(this.open);
           } else {

@@ -172,6 +172,7 @@ declarative element definition is:
       if (this.terminate) {
         this._reopenInterval = this._config._reopenInterval;
         this.cancelAsync(this._reopenAttempt);
+        this.fire('close');
       } else {
         if (!event.wasClean) {
           if (this.noDecay) {
@@ -181,10 +182,8 @@ declarative element definition is:
             this._reopenInterval *= 2;
           }
         }
+        this.fire('close');
       }
-      var ws = this._websocket;
-      if (ws && ws.readyState === ws.CLOSED) return;
-      this.fire('close');
     },
 
     /**
